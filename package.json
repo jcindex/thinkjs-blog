@@ -9,9 +9,11 @@
     "watch": "npm run watch-compile"
   },
   "dependencies": {
-    "thinkjs": "2.2.x",
     "babel-runtime": "6.x.x",
-    "source-map-support": "0.4.0"
+    "captchapng": "0.0.1",
+    "ccap-dev": "^0.2.0",
+    "source-map-support": "0.4.0",
+    "thinkjs": "2.2.x"
   },
   "devDependencies": {
     "babel-cli": "6.x.x",
