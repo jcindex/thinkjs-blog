@@ -3,5 +3,6 @@
  * config
  */
 export default {
-  //key: value
+  //key: value,
+  route_on: true //开启自定义路由功能
 };

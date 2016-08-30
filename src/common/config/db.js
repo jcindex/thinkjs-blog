@@ -4,7 +4,7 @@
  * @type {Object}
  */
 export default {
-  type: 'mysql',
+  type: 'mongo',
   adapter: {
     mysql: {
       host: '127.0.0.1',
@@ -16,7 +16,10 @@ export default {
       encoding: 'utf8'
     },
     mongo: {
-
+      host: '127.0.0.1',
+      port: '27017',
+      encoding: "utf8",
+      database: "thinkjs"
     }
   }
 };
