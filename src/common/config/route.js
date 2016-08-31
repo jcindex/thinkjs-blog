@@ -1,3 +1,3 @@
 export default [
-    [/^admin\/(?!index)(.*)$/, "admin/index/:1:2"]
+    [/^admin\/(login)(.*)$/, "admin/index/:1:2"]
 ]
