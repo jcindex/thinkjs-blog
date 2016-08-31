@@ -94,11 +94,11 @@
 		<tbody>
 			<tr>
 				<th width="30%">服务器计算机名</th>
-				<td><span id="lbServerName">http://127.0.0.1/</span></td>
+				<td><span id="lbServerName"><%= options.hostname %></span></td>
 			</tr>
 			<tr>
 				<td>服务器IP地址</td>
-				<td>192.168.1.1</td>
+				<td><%= options.ip %></td>
 			</tr>
 			<tr>
 				<td>服务器域名</td>
@@ -106,19 +106,21 @@
 			</tr>
 			<tr>
 				<td>服务器端口 </td>
-				<td>80</td>
+				<td><%= options.port %></td>
 			</tr>
 			<tr>
 				<td>服务器IIS版本 </td>
 				<td>Microsoft-IIS/6.0</td>
 			</tr>
 			<tr>
-				<td>本文件所在文件夹 </td>
-				<td>D:\WebSite\HanXiPuTai.com\XinYiCMS.Web\</td>
+				<td>网站根目录 </td>
+				<td><%=options.workdir %></td>
 			</tr>
 			<tr>
 				<td>服务器操作系统 </td>
-				<td>Microsoft Windows NT 5.2.3790 Service Pack 2</td>
+				<td><%=options.ostype %> <%=options.release %>
+				</td>
+				<!--Microsoft Windows NT 5.2.3790 Service Pack 2-->
 			</tr>
 			<tr>
 				<td>系统所在文件夹 </td>
@@ -130,7 +132,7 @@
 			</tr>
 			<tr>
 				<td>服务器的语言种类 </td>
-				<td>Chinese (People's Republic of China)</td>
+				<td><%= options.lang||"none" %></td>
 			</tr>
 			<tr>
 				<td>.NET Framework 版本 </td>
@@ -146,7 +148,7 @@
 			</tr>
 			<tr>
 				<td>服务器上次启动到现在已运行 </td>
-				<td>7210分钟</td>
+				<td><%=options.uptime %></td>
 			</tr>
 			<tr>
 				<td>逻辑驱动器 </td>
@@ -154,11 +156,11 @@
 			</tr>
 			<tr>
 				<td>CPU 总数 </td>
-				<td>4</td>
+				<td><%=options.cpus_num %></td>
 			</tr>
 			<tr>
 				<td>CPU 类型 </td>
-				<td>x86 Family 6 Model 42 Stepping 1, GenuineIntel</td>
+				<td><%=options.arch %> <%=options.cputype %></td>
 			</tr>
 			<tr>
 				<td>虚拟内存 </td>

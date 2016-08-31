@@ -9,8 +9,6 @@ export default class extends think.middleware.base {
    */
   *run(){
     let authObj = yield this.checkAuth();
-    // console.log(authObj)
-    // console.log("MiddleWare: ", url, url.match(/^\/admin\/(?!login)/));
     return authObj;
   }
 
@@ -23,11 +21,9 @@ export default class extends think.middleware.base {
     if(url.match(/^\/admin\/(([^/]*)?\/?)?(([^/]*)?\/?)*/)) {
       let _2 = RegExp.$2;
       let _4 = RegExp.$4;
-      // console.log(">>>", (_2 !== "index" && _4 !== "login"), _2, _4);
       if((_2 === "index" && _4 === 'login')
         || (_2 === "login")) {
         //登录请求
-        console.log("登录请求");
         if(admin) {
           http.redirect("/admin/");
           return http.prevent();
@@ -37,7 +33,6 @@ export default class extends think.middleware.base {
         || (_2 === "index" && _4 !== "login")
         || (!_2 && !_4)) {
         //后台非登录请求
-        console.log("后台非登录请求");
         if(!admin) {
           http.redirect("/admin/login");
           return http.prevent();

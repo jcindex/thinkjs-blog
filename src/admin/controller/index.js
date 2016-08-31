@@ -1,7 +1,8 @@
 'use strict';
+import os from "os";
+import ccap from "ccap-dev";
 
 import Base from './base.js';
-import ccap from "ccap-dev";
 import util from "../utils/common.util";
 
 var captcha = ccap({
@@ -25,7 +26,34 @@ export default class extends Base {
     return this.display();
   }
 
-  welcomeAction() {
+  *welcomeAction() {
+    console.log(os.type(), os.release(), os.platform(),os.arch(),os.tmpdir());
+    console.log(think.port);
+
+    let uptime = os.uptime();
+    let uptimeStr = parseInt(uptime / 3600) + "时";
+    uptime %= 3600;
+    uptimeStr += parseInt(uptime / 60) + "分";
+    uptime %= 60;
+    uptimeStr += parseInt(uptime) + "秒 ";
+    uptime = parseInt(uptime / 60 * 1000);
+    uptimeStr += uptime + "ms";
+    let port = this.http.host.replace(this.http.hostname + ":", "");
+    let cpus = os.cpus();
+    this.assign("options", {
+      hostname: os.hostname(),
+      ip: this.ip(),
+      workdir: think.ROOT_PATH,
+      ostype: os.type(),
+      release: os.release(),
+      platform: os.platform(),
+      arch: os.arch(),
+      uptime: uptimeStr,
+      cpus_num: cpus.length,
+      cputype: cpus[0].model,
+      port: port,
+      lang: think.lang,
+    });
     return this.display();
   }
 
