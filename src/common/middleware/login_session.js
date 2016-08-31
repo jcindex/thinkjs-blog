@@ -20,12 +20,12 @@ export default class extends think.middleware.base {
     let admin = yield http.session('admin');
     // admin = 1;
     console.log(">>>", url.match(/^\/admin\/(?!(login|?!image))(.*)$/));
-    if(url.match(/^\/admin\/(?!login)(.*)$/)) {
-      if(!admin) {
-        http.redirect("/admin/login");
-        return think.prevent();
-      }
-    }
+    // if(url.match(/^\/admin\/(?!login)(.*)$/)) {
+    //   if(!admin) {
+    //     http.redirect("/admin/login");
+    //     return think.prevent();
+    //   }
+    // }
     return {};
   }
 }
