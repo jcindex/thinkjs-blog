@@ -24,7 +24,7 @@ export default class extends Base {
    */
   indexAction(){
     //auto render template file index_index.html
-
+    this.model("admin")
     //
     return this.display();
   }
