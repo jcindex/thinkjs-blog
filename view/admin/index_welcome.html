@@ -101,16 +101,12 @@
 				<td><%= options.ip %></td>
 			</tr>
 			<tr>
-				<td>服务器域名</td>
-				<td>www.h-ui.net</td>
-			</tr>
-			<tr>
 				<td>服务器端口 </td>
 				<td><%= options.port %></td>
 			</tr>
 			<tr>
-				<td>服务器IIS版本 </td>
-				<td>Microsoft-IIS/6.0</td>
+				<td>服务器Node版本 </td>
+				<td><%=options.node_ver %></td>
 			</tr>
 			<tr>
 				<td>网站根目录 </td>
@@ -120,39 +116,27 @@
 				<td>服务器操作系统 </td>
 				<td><%=options.ostype %> <%=options.release %>
 				</td>
-				<!--Microsoft Windows NT 5.2.3790 Service Pack 2-->
 			</tr>
 			<tr>
-				<td>系统所在文件夹 </td>
-				<td>C:\WINDOWS\system32</td>
-			</tr>
-			<tr>
-				<td>服务器脚本超时时间 </td>
-				<td>30000秒</td>
+				<td>服务器平台 </td>
+				<td><%=options.platform %>
+				</td>
 			</tr>
 			<tr>
 				<td>服务器的语言种类 </td>
-				<td><%= options.lang||"none" %></td>
-			</tr>
-			<tr>
-				<td>.NET Framework 版本 </td>
-				<td>2.050727.3655</td>
+				<td><%=options.lang||"none" %></td>
 			</tr>
 			<tr>
 				<td>服务器当前时间 </td>
-				<td>2014-6-14 12:06:23</td>
+				<td><%=options.server_time %></td>
 			</tr>
 			<tr>
-				<td>服务器IE版本 </td>
-				<td>6.0000</td>
-			</tr>
-			<tr>
-				<td>服务器上次启动到现在已运行 </td>
+				<td>服务器已运行时间 </td>
 				<td><%=options.uptime %></td>
 			</tr>
 			<tr>
-				<td>逻辑驱动器 </td>
-				<td>C:\D:\</td>
+				<td>服务器进程ID </td>
+				<td><%=options.pid %></td>
 			</tr>
 			<tr>
 				<td>CPU 总数 </td>
@@ -163,31 +147,16 @@
 				<td><%=options.arch %> <%=options.cputype %></td>
 			</tr>
 			<tr>
-				<td>虚拟内存 </td>
-				<td>52480M</td>
+				<td>总内存 </td>
+				<td><%=options.totalmem %></td>
 			</tr>
 			<tr>
-				<td>当前程序占用内存 </td>
-				<td>3.29M</td>
-			</tr>
-			<tr>
-				<td>Asp.net所占内存 </td>
-				<td>51.46M</td>
-			</tr>
-			<tr>
-				<td>当前Session数量 </td>
-				<td>8</td>
-			</tr>
-			<tr>
-				<td>当前SessionID </td>
-				<td>gznhpwmp34004345jz2q3l45</td>
-			</tr>
-			<tr>
-				<td>当前系统用户名 </td>
-				<td>NETWORK SERVICE</td>
+				<td>剩余内存 </td>
+				<td><%=options.freemem %></td>
 			</tr>
 		</tbody>
-	</table</div>
+	</table>
+</div>
 <footer class="footer mt-20">
 	<div class="container">
 		<p>感谢jQuery、layer、laypage、Validform、UEditor、My97DatePicker、iconfont、Datatables、WebUploaded、icheck、highcharts、bootstrap-Switch<br>

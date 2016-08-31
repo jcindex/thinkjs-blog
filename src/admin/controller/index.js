@@ -1,6 +1,7 @@
 'use strict';
 import os from "os";
 import ccap from "ccap-dev";
+import moment from "moment";
 
 import Base from './base.js';
 import util from "../utils/common.util";
@@ -23,12 +24,15 @@ export default class extends Base {
    */
   indexAction(){
     //auto render template file index_index.html
+
+    //
     return this.display();
   }
 
   *welcomeAction() {
-    console.log(os.type(), os.release(), os.platform(),os.arch(),os.tmpdir());
-    console.log(think.port);
+    // console.log(os.type(), os.release(), os.platform(),os.arch(),os.tmpdir());
+    // console.log(think.port);
+    console.log(this.ip())
 
     let uptime = os.uptime();
     let uptimeStr = parseInt(uptime / 3600) + "时";
@@ -53,6 +57,11 @@ export default class extends Base {
       cputype: cpus[0].model,
       port: port,
       lang: think.lang,
+      node_ver: process.version,
+      pid: process.pid,
+      totalmem: parseFloat(os.totalmem() / 1024 / 1024).toFixed(2) + "M",
+      freemem: parseFloat(os.freemem() / 1024 / 1024).toFixed(2) + "M",
+      server_time: moment().format("YYYY-MM-DD HH:mm:ss")
     });
     return this.display();
   }
@@ -67,7 +76,7 @@ export default class extends Base {
       if(!data.username || !data.password) return this.fail(1000, "用户名或密码错误!!");
       let vcode = yield this.session("vcode");
       if(!data.code || data.code.toLowerCase() != vcode.code) return this.fail(1001, "验证码错误!!");
-      let user = yield this.model("user").findByUserName(data.username);
+      let user = yield this.model("admin").findByUserName(data.username);
       if(!think.isEmpty(user) && think.md5(data.password) === user.password) {
         yield this.session("admin", user);
         return this.redirect("index");
