@@ -9,15 +9,16 @@ export default class extends think.model.mongo {
         let ret = yield this.add(user);
         return ret;
     }
-    delUser(_id) {
-        // this.remove();
-    }
+    // delUser(_id) {
+    //     // this.remove();
+    // }
 
     *findAll() {
-        return this.select();
+        return yield this.select();
     }
-    findByUserName(uname) {
-        return this.where({
+
+    *findByUserName(uname) {
+        return yield this.where({
             username: uname
         }).find();
     }

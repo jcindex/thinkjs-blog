@@ -2,19 +2,13 @@
 /**
  * model
  */
-export default class extends think.model.base {
-    *updateAdmin(aid, opts) {
-        
+export default class extends think.model.mongo {
+    *addAdmin(admin) {
+        let ret = yield this.add(admin);
+        return ret;
     }
-    addAdmin(admin) {
-        this.add(admin);
-    }
-    *findAll() {
-        return this.select();
-    }
-    findByUserName(uname) {
-        return this.where({
-            username: uname
-        }).find();
+    *findByUserName(username) {
+        let admin = yield this.where({username: username}).select();
+        return admin;
     }
 }

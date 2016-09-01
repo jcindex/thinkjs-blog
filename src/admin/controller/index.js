@@ -24,7 +24,7 @@ export default class extends Base {
    */
   indexAction(){
     //auto render template file index_index.html
-    this.model("admin")
+    // this.model("admin")
     //
     return this.display();
   }
@@ -121,16 +121,16 @@ export default class extends Base {
   }
 
   *testaddadminAction() {
-    let admin = yield this.model("admin/admin").findByUserName("admin");
-    if(admin) return this.end("User is already exists!!");
+    let admin = yield this.model("admin").findByUserName("admin");
+    if(!think.isEmpty(admin)) return this.end("User is already exists!!");
     admin = {
       username: 'admin',
-      password: this.md5('admin'),
+      password: think.md5('admin'),
       reg_date: moment().format("YYYY-MM-DD HH:mm:ss"),
       role: 1,
       rolename: "超级管理员"
     };
-    this.model("admin/admin").addAdmin(admin);
+    let ret = yield this.model("admin").addAdmin(admin);
     return this.end("add success!");
   }
 

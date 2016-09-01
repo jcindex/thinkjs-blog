@@ -19,7 +19,16 @@ export default {
       host: '127.0.0.1',
       port: '27017',
       encoding: "utf8",
-      database: "thinkjs"
+      database: "thinkjs",
+      prefix: "think_",
+      log_sql: true,
+      log_connect: true,
+      cache: {
+        on: true,
+        type: '',
+        timeout: 3600
+      },
+      options: {}
     }
   }
 };
