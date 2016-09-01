@@ -16,7 +16,7 @@ export default class extends think.middleware.base {
     let http = this.http;
     let url = http.req.url;
     let admin = yield http.session('admin');
-    admin = 1;//测试登录
+    // admin = 1;//测试登录
     if(url.lastIndexOf('/') !== url.length - 1) url += "/";
     if(url.match(/^\/admin\/(([^/]*)?\/?)?(([^/]*)?\/?)*/)) {
       let _2 = RegExp.$2;

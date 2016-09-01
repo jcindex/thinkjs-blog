@@ -8,7 +8,7 @@ export default class extends think.model.mongo {
         return ret;
     }
     *findByUserName(username) {
-        let admin = yield this.where({username: username}).select();
+        let admin = yield this.where({username: username}).find();
         return admin;
     }
 }

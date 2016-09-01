@@ -22,18 +22,17 @@ export default class extends Base {
    * index action
    * @return {Promise} []
    */
-  indexAction(){
+  *indexAction(){
     //auto render template file index_index.html
-    // this.model("admin")
-    //
+    let admin = yield this.session("admin");
+    console.log(admin);
+    this.assign({
+      admin: admin
+    });
     return this.display();
   }
 
   *welcomeAction() {
-    // console.log(os.type(), os.release(), os.platform(),os.arch(),os.tmpdir());
-    // console.log(think.port);
-    console.log(this.ip())
-
     let uptime = os.uptime();
     let uptimeStr = parseInt(uptime / 3600) + "时";
     uptime %= 3600;
@@ -75,12 +74,16 @@ export default class extends Base {
       let data = this.post();
       if(!data.username || !data.password) return this.fail(1000, "用户名或密码错误!!");
       let vcode = yield this.session("vcode");
+      yield this.session("vcode", null);  //删除验证码
+      console.log("验证码：", data.code, vcode.code);
       if(!data.code || data.code.toLowerCase() != vcode.code) return this.fail(1001, "验证码错误!!");
       let user = yield this.model("admin").findByUserName(data.username);
       if(!think.isEmpty(user) && think.md5(data.password) === user.password) {
         yield this.session("admin", user);
         let log = {
-          type: 1,
+          type: "登录",
+          action: this.http.url,
+          content: "登录成功",
           uname: user.username,
           ip: this.ip(),
           optime: moment().format("YYYY-MM-DD HH:mm:ss")
@@ -88,6 +91,15 @@ export default class extends Base {
         yield this.model("syslog").add(log);
         return this.redirect("index");
       }
+      let log = {
+        type: "登录",
+        action: this.http.url,
+        content: "登录失败",
+        uname: data.username,
+        ip: this.ip(),
+        optime: moment().format("YYYY-MM-DD HH:mm:ss")
+      };
+      yield this.model("syslog").add(log);
       return this.fail(1002, "用户不存在!!");
     }
     return this.display();
@@ -118,6 +130,11 @@ export default class extends Base {
     yield this.session("vcode", sessionData);
     this.write(ary[1]);
     this.end();
+  }
+
+  *logoutAction() {
+    yield this.session();
+    return this.redirect("/admin/login");
   }
 
   *testaddadminAction() {

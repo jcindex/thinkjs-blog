@@ -7,4 +7,8 @@ export default class extends think.model.mongo {
     addLog(log) {
         return this.add(log);
     }
+
+    list() {
+        return this.select();
+    }
 }

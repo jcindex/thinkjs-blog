@@ -12,7 +12,13 @@ export default class extends Base {
     return this.display();
   }
 
-  logAction() {
+  *logAction() {
+    let syslogs = yield this.model('syslog').list();
+    console.log(syslogs);
+    this.assign({
+      logs: syslogs
+    });
+    console.log(this.http.url);
     return this.display();
   }
 }
