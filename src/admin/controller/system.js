@@ -11,4 +11,8 @@ export default class extends Base {
     //auto render template file index_index.html
     return this.display();
   }
+
+  logAction() {
+    return this.display();
+  }
 }

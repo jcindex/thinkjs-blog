@@ -79,6 +79,13 @@ export default class extends Base {
       let user = yield this.model("admin").findByUserName(data.username);
       if(!think.isEmpty(user) && think.md5(data.password) === user.password) {
         yield this.session("admin", user);
+        let log = {
+          type: 1,
+          uname: user.username,
+          ip: this.ip(),
+          optime: moment().format("YYYY-MM-DD HH:mm:ss")
+        };
+        yield this.model("syslog").add(log);
         return this.redirect("index");
       }
       return this.fail(1002, "用户不存在!!");
@@ -111,6 +118,20 @@ export default class extends Base {
     yield this.session("vcode", sessionData);
     this.write(ary[1]);
     this.end();
+  }
+
+  *testaddadminAction() {
+    let admin = yield this.model("admin/admin").findByUserName("admin");
+    if(admin) return this.end("User is already exists!!");
+    admin = {
+      username: 'admin',
+      password: this.md5('admin'),
+      reg_date: moment().format("YYYY-MM-DD HH:mm:ss"),
+      role: 1,
+      rolename: "超级管理员"
+    };
+    this.model("admin/admin").addAdmin(admin);
+    return this.end("add success!");
   }
 
 }
