@@ -21,4 +21,10 @@ export default class extends Base {
     console.log(this.http.url);
     return this.display();
   }
+
+  *dellogAction(_id) {
+    let ret = yield this.model("syslog").delLog(_id);
+    console.log(ret);
+    this.end({errmsg: ret});
+  }
 }

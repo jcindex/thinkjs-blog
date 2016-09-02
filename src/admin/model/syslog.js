@@ -9,6 +9,10 @@ export default class extends think.model.mongo {
     }
 
     list() {
-        return this.select();
+        return this.order("optime desc").select();
+    }
+
+    delLog(_id) {
+        return this.where({_id: _id}).delete();
     }
 }
