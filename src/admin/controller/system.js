@@ -27,4 +27,29 @@ export default class extends Base {
     console.log(ret);
     this.end({errmsg: ret});
   }
+  *searchAction(starttime, endtime, key) {
+    let options = {};
+    if(starttime) options.starttime = starttime;
+    if(endtime) options.endtime = endtime;
+    if(key) options.key = key;
+    var where = {}, or = false;
+    ///////下面的可能有错，需要测试
+    if(options.starttime && options.endtime) {
+      where.optime = [">=", options.starttime, "and", "<=", options.endtime];
+      or = true;
+    }
+    if(options.key) {
+      if(or) {
+        var optime = where.optime;
+        where = {
+          $or: [
+            {optime: optime},
+            {key: options.key}
+          ]
+        };
+      }
+    }
+    let list = yield this.model("syslog").searchList(where);
+    return list;
+  }
 }

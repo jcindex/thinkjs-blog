@@ -15,4 +15,8 @@ export default class extends think.model.mongo {
     delLog(_id) {
         return this.where({_id: _id}).delete();
     }
+
+    searchList(where) {
+        return this.where(where).select();
+    }
 }
