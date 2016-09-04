@@ -14,12 +14,12 @@ export default class extends Base {
   // }
   async listAction() {
     let list = await this.model("catagory").findAll();
-    console.log(list);
     this.assign("catagories", list);
     this.display();
   }
 
   addAction() {
+    this.assign("cat", null);
     this.display();
   }
 
@@ -30,8 +30,30 @@ export default class extends Base {
       || !info.abstract || !info.author) {
         return this.end('<script>alert("信息有误!!");history.go(-1);</script>');
     }
-    info.date = moment().format("YYYY-MM-DD HH:mm:ss");
-    yield this.model("catagory").addCatagory(info);
+    if(!info.cid) {
+      info.date = moment().format("YYYY-MM-DD HH:mm:ss");
+      yield this.model("catagory").addCatagory(info);
+    } else {
+      yield this.model("catagory").updateCatagory(info.cid, info);
+    }
     this.redirect("list");
+  }
+
+  async editAction() {
+    let _id = this.get("cid");
+    if(!_id) this.end('<script>alert("找不到栏目!!");history.go(-1);</script>');
+    let catagory = await this.model("catagory").findById(_id);
+    this.assign("cat", catagory);
+    this.display("add");
+  }
+
+  *delAction() {
+    let _id = this.get("cid");
+    if(_id.indexOf("|") !== -1) {
+      _id = _id.split("|");
+    }
+    if(!_id) this.fail(1000, "栏目不存在!!");
+    let ret = yield this.model("catagory").delCatagory(_id);
+    this.success("删除成功!");
   }
 }

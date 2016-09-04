@@ -1,13 +1,16 @@
 <%include commons/header.inc.html %>
-<title>新增资讯 - 栏目管理</title>
+<title>新增栏目 - 栏目管理</title>
 </head>
 <body>
 <article class="page-container">
 	<form class="form form-horizontal" id="form-catagory-add" action="addcatagory" method="post" onsubmit="return checkForm();">
+		<% if(cat && cat._id) { %>
+		<input type="hidden" name="cid" value="<%=cat._id %>" />
+		<% } %>
 		<div class="row cl">
 			<label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>栏目标题：</label>
 			<div class="formControls col-xs-8 col-sm-9">
-				<input type="text" class="input-text" required value="" maxlength="10" placeholder="请输入栏目标题" name="title">
+				<input type="text" class="input-text" required value="<%= cat ? cat.title : '' %>" maxlength="10" placeholder="请输入栏目标题" name="title">
 			</div>
 		</div>
 		<div class="row cl">
@@ -15,9 +18,9 @@
 			<div class="formControls col-xs-8 col-sm-9">
 				<span class="select-box">
 					<select name="type" class="select">
-						<option value="普通栏目" selected>普通栏目</option>
-						<option value="会员栏目">会员栏目</option>
-						<option value="VIP栏目">VIP栏目</option>
+						<option value="普通栏目" <%= cat ? (cat.type == "普通栏目" ? "selected" : "") : 'selected' %>>普通栏目</option>
+						<option value="会员栏目" <%= cat ? (cat.type == "会员栏目" ? "selected" : "") : '' %>>会员栏目</option>
+						<option value="VIP栏目" <%= cat ? (cat.type == "VIP栏目" ? "selected" : "") : '' %>>VIP栏目</option>
 					</select>
 				</span>
 			</div>
@@ -25,33 +28,33 @@
 		<div class="row cl">
 			<label class="form-label col-xs-4 col-sm-2">排序值(值越大越靠前)：</label>
 			<div class="formControls col-xs-8 col-sm-9">
-				<input type="text" class="input-text" value="0" required placeholder="请输入排序值，默认为0" name="order">
+				<input type="text" class="input-text" value="<%= cat ? cat.order : '0' %>" required placeholder="请输入排序值，默认为0" name="order">
 			</div>
 		</div>
 		<div class="row cl">
 			<label class="form-label col-xs-4 col-sm-2">栏目摘要：</label>
 			<div class="formControls col-xs-8 col-sm-9">
-				<textarea name="abstract" class="textarea" required placeholder="请最少输入10个字符！" datatype="*10-100" dragonfly="true" nullmsg="备注不能为空！" onKeyUp="textarealength(this,200)"></textarea>
-				<p class="textarea-numberbar"><em class="textarea-length">0</em>/200</p>
+				<textarea name="abstract" class="textarea" required placeholder="请最少输入5个字符！" datatype="*10-100" dragonfly="true" nullmsg="备注不能为空！" onKeyUp="textarealength(this,200)"><%= cat ? cat.abstract : '' %></textarea>
+				<p class="textarea-numberbar"><em class="textarea-length"><%= cat ? cat.abstract.length : '0' %></em>/200</p>
 			</div>
 		</div>
 		<div class="row cl">
 			<label class="form-label col-xs-4 col-sm-2">栏目作者：</label>
 			<div class="formControls col-xs-8 col-sm-9">
-				<input type="text" class="input-text" required value="admin" placeholder="请输入栏目作者,默认为admin" name="author">
+				<input type="text" class="input-text" required value="<%= cat ? cat.author : 'admin' %>" placeholder="请输入栏目作者,默认为admin" name="author">
 			</div>
 		</div>
 		<div class="row cl">
 			<label class="form-label col-xs-4 col-sm-2">发布选项：</label>
 			<div class="formControls col-sm-5">
-				<input type="radio" class="input-radio" required id="display" value="1" name="state" checked><label for="display"> 发布</label>
+				<input type="radio" class="input-radio" required id="display" value="1" name="state" <%= cat ? (cat.state == 1 ? "checked" : "") : 'checked' %>><label for="display"> 发布</label>
 				&nbsp;&nbsp;
-				<input type="radio" class="input-radio" id="nodisplay" required value="0" name="state"><label for="nodisplay"> 不发布</label>
+				<input type="radio" class="input-radio" id="nodisplay" required value="0" name="state" <%= cat ? (cat.state == 1 ? "" : "checked") : '' %>><label for="nodisplay"> 不发布</label>
 			</div>
 		</div>
 		<div class="row cl">
 			<div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-2">
-				<button class="btn btn-primary radius" type="submit"><i class="Hui-iconfont">&#xe632;</i> 保存并提交审核</button>
+				<button class="btn btn-primary radius" type="submit"><i class="Hui-iconfont">&#xe632;</i> 提交审核</button>
 				<button onClick="catagory_save();" class="btn btn-secondary radius" type="button"><i class="Hui-iconfont">&#xe632;</i> 保存草稿</button>
 				<button onClick="removeIframe();" class="btn btn-default radius" type="button">&nbsp;&nbsp;取消&nbsp;&nbsp;</button>
 			</div>
@@ -84,8 +87,9 @@ function checkForm() {
 	var errobj = null;
 	$form.find("input, select, textarea").each(function() {
 		var val = $(this).val();
-		if($(this).attr("name") === 'abstract' && val.length < 10) {
-			alert("栏目摘要不能少于10个字");
+		var name = $(this).attr("name");
+		if(name === 'abstract' && val.length < 5) {
+			alert("栏目摘要不能少于5个字");
 			errobj = $(this);
 		}
 		if(!val) errobj = $(this);
@@ -114,7 +118,7 @@ function catagory_save() {
 		info[$(this).attr("name")] = val;
 	});
 	window.localStorage.setItem("info", JSON.stringify(info));
-	alert("信息保存成功!!;")
+	alert("信息保存成功!!;");
 }
 
 //取消并返回
