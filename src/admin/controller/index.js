@@ -75,7 +75,6 @@ export default class extends Base {
       if(!data.username || !data.password) return this.fail(1000, "用户名或密码错误!!");
       let vcode = yield this.session("vcode");
       yield this.session("vcode", null);  //删除验证码
-      console.log("验证码：", data.code, vcode.code);
       if(!data.code || data.code.toLowerCase() != vcode.code) return this.fail(1001, "验证码错误!!");
       let user = yield this.model("admin").findByUserName(data.username);
       if(!think.isEmpty(user) && think.md5(data.password) === user.password) {
