@@ -22,6 +22,10 @@ export default class extends Base {
   }
 
   async addAction() {
+    // let info = this.post();
+    let catagory = await this.model("catagory").findAll();
+    this.assign("catagory", catagory);
+    this.assign("article", null);
     this.display();
   }
 }
