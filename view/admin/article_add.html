@@ -3,7 +3,7 @@
 </head>
 <body>
 <article class="page-container">
-	<form class="form form-horizontal" id="form-article-add" action="add" enctype="multipart/form-data">
+	<form class="form form-horizontal" id="form-article-add" action="add" method="post" enctype="multipart/form-data">
 		<div class="row cl">
 			<label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>文章标题：</label>
 			<div class="formControls col-xs-8 col-sm-9">
@@ -98,6 +98,12 @@
 				<button onClick="mobanxuanze()" class="btn btn-default radius ml-10">选择模版</button>
 			</div>
 		</div>-->
+		<div class="row cl">
+			<label class="form-label col-xs-4 col-sm-2">缩略图：</label>
+			<div class="formControls col-xs-8 col-sm-9">
+				<input type="file" class="input-text" placeholder="请输入文章作者,默认为admin" name="simg">
+			</div>
+		</div>
 		<div class="row cl">
 			<label class="form-label col-xs-4 col-sm-2">缩略图：</label>
 			<div class="formControls col-xs-8 col-sm-9">
