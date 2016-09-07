@@ -286,7 +286,6 @@ export default class Uploader {
      */
     getStateInfo(errCode)
     {
-        // console.trace("---->", this.stateMap);
         return this.stateMap[errCode] || this.stateMap["ERROR_UNKNOWN"];
     }
 

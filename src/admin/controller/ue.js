@@ -49,9 +49,6 @@ export default class extends Base {
         break;
     }
     let callback = this.get("callback");
-    //url 
-    // /admin/ue/index.html?action=config&&noCache=1473250872555
-    console.log(">>>>",callback, result);
     if(callback) {
       if(callback.match(/^[\w_]+$/)) {
         return this.end(commonUtil.htmlspecialchars(callback)
