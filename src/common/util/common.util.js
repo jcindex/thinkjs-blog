@@ -1,5 +1,5 @@
 
-import iconv from "iconv-lite";
+// import iconv from "iconv-lite";
 
 //去除了o O 0三个易混淆的字母
 var defaultChars = "abcdefghijklmnpqrstuvwxyz123456789ABCDEFGHIJKLMNPQRSTUVWXYZ";
@@ -22,7 +22,7 @@ export default {
                 .replace(/"/g, '&quot;')
                 .replace(/'/g, '&#039;');
     },
-    iconv: (str, toCharset) => {
-        return iconv.decode(str, toCharset);
-    }
+    // iconv: (str, toCharset) => {
+    //     return iconv.decode(str, toCharset);
+    // }
 }

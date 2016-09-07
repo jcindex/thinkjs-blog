@@ -5,6 +5,8 @@ import request from "request";
 
 import commonUtil from "./common.util";
 
+// iconv.skipDecodeWarning = true;//跳过编码转换警告
+
 export default class Uploader {
 
     constructor(thinkjs, fileField, config, type = 'upload') {
@@ -21,15 +23,8 @@ export default class Uploader {
             pathFormat: 'YYMMDDHHmmss'
         }, config);
         this.type = type;
-        if(type ===  'remote') {
-            this.saveRemote();
-        } else if(type === 'base64') {
-            this.upBase64();
-        } else {
-            this.upFile();
-        }
         this.stateMap = {
-            "SUCCESS_FILE_MOVE": "文件保存成功",
+            "SUCCESS_FILE_MOVE": "SUCCESS",
             "EMPTY_FILE": "上传文件为空",
             "ERROR_TMP_FILE": "临时文件错误",
             "ERROR_TMP_FILE_NOT_FOUND": "找不到临时文件",
@@ -45,7 +40,13 @@ export default class Uploader {
             "ERROR_HTTP_LINK": "链接不是http链接",
             "ERROR_HTTP_CONTENTTYPE": "链接contentType不正确"
         };
-        this.stateMap['ERROR_TYPE_NOT_ALLOWED'] = iconv('unicode', 'utf-8', this.stateMap['ERROR_TYPE_NOT_ALLOWED']);
+        if(type ===  'remote') {
+            this.saveRemote();
+        } else if(type === 'base64') {
+            this.upBase64();
+        } else {
+            this.upFile();
+        }
     }
     saveRemote() {
         let imgUrl = commonUtil.htmlspecialchars(this.fileField);
@@ -89,20 +90,20 @@ export default class Uploader {
             }
 
             //创建目录失败
-            if(!fs.existsSync($dirname) && !think.mkdir(dirname)) {
+            if(!fs.existsSync(dirname) && !think.mkdir(dirname)) {
                 this.stateInfo = this.getStateInfo("ERROR_CREATE_DIR");
                 return;
-            } else if (!think.isWritable($dirname)) {
+            } else if (!think.isWritable(dirname)) {
                 this.stateInfo = this.getStateInfo("ERROR_DIR_NOT_WRITEABLE");
                 return;
             }
 
             //移动文件
-            if(!fs.existsSync(this.config.saveDir)) {
-                think.mkdir(this.config.saveDir);
+            if(!fs.existsSync(this.filePath)) {
+                think.mkdir(this.filePath);
             }
             try {
-                fs.writeFileSync(this.config.saveDir + this.fullName, imgBuf);
+                fs.writeFileSync(this.filePath, imgBuf);
             } catch(e) {
                 this.stateInfo = this.getStateInfo("ERROR_FILE_MOVE");
                 return;
@@ -132,20 +133,20 @@ export default class Uploader {
         }
 
         //创建目录失败
-        if(!fs.existsSync($dirname) && !think.mkdir(dirname)) {
+        if(!fs.existsSync(dirname) && !think.mkdir(dirname)) {
             this.stateInfo = this.getStateInfo("ERROR_CREATE_DIR");
             return;
-        } else if (!think.isWritable($dirname)) {
+        } else if (!think.isWritable(dirname)) {
             this.stateInfo = this.getStateInfo("ERROR_DIR_NOT_WRITEABLE");
             return;
         }
 
         //移动文件
-        if(!fs.existsSync(this.config.saveDir)) {
-            think.mkdir(this.config.saveDir);
+        if(!fs.existsSync(this.filePath)) {
+            think.mkdir(this.filePath);
         }
         try {
-            fs.writeFileSync(this.config.saveDir + this.fullName, imgBuf);
+            fs.writeFileSync(this.filePath, imgBuf);
         } catch(e) {
             this.stateInfo = this.getStateInfo("ERROR_FILE_MOVE");
             return;
@@ -167,7 +168,7 @@ export default class Uploader {
             return;
         }
         /*
-        else if (!is_uploaded_file($file['tmp_name'])) {
+        else if (!is_uploaded_file(file['tmp_name'])) {
             this.stateInfo = this.getStateInfo("ERROR_TMPFILE");
             return;
         }
@@ -192,21 +193,22 @@ export default class Uploader {
         }
 
         //创建目录失败
-        if(!fs.existsSync($dirname) && !think.mkdir(dirname)) {
+        if(!fs.existsSync(dirname) && !think.mkdir(dirname)) {
             this.stateInfo = this.getStateInfo("ERROR_CREATE_DIR");
             return;
-        } else if (!think.isWritable($dirname)) {
+        } else if (!think.isWritable(dirname)) {
             this.stateInfo = this.getStateInfo("ERROR_DIR_NOT_WRITEABLE");
             return;
         }
 
         //移动文件
         let buf = fs.readFileSync(this.file.path);
-        if(!fs.existsSync(this.config.saveDir)) {
-            think.mkdir(this.config.saveDir);
-        }
+        // if(!fs.existsSync(this.filePath)) {
+        //     think.mkdir(this.filePath);
+        // }
+        // console.log(buf.length, this.filePath);
         try {
-            fs.writeFileSync(this.config.saveDir + this.fullName, buf);
+            fs.writeFileSync(this.filePath, buf);
         } catch(e) {
             this.stateInfo = this.getStateInfo("ERROR_FILE_MOVE");
             return;
@@ -223,43 +225,40 @@ export default class Uploader {
     }
 
     getFullName() {
-        if(!this.file) {
-            let oriName = this.config.oriName;
-            oriName = oriName.substr(0, oriName.lastIndexOf("."));
-            oriName = oriName.replace(/[\|\?\"\<\>\/\*\\\\]+/, "");
-            let date = moment().format("YYYY-YY-MM-DD-hh:mm-ss").split("-");
-            let format = this.config.pathFormat;
-            format = format.replace("{yyyy}", date[0])
-                .replace("{yy}", date[1])
-                .replace("{mm}", date[2])
-                .replace("{dd}", date[3])
-                .replace("{hh}", date[4])
-                .replace("{ii}", date[5])
-                .replace("{ss}", date[6])
-                .replace("{time}", Date.now())
-                .replace("{filename}", oriName);
-            let randNum = Math.random() * 10000000000 + "" + Math.random() * 10000000000;
-            let matches;
-            if((matches = format.match(/\{rand\:([\d]*)\}/i))) {
-                format = format.replace(/\{rand\:[\d]*\}/i, randNum.substr(0, matches[1]));
-            }
-            return format + "." + this.getFileExt();
-        };
-        let path = this.file.path;
-        let fullName = path.substr(path.lastIndexOf(think.sep) + 1);
-        return !think.isEmpty(fullName) ? fullName : "";
+        let oriName = this.config.oriName;
+        oriName = oriName.substr(0, oriName.lastIndexOf("."));
+        oriName = oriName.replace(/[\|\?\"\<\>\/\*\\\\]+/, "");
+        let date = moment().format("YYYY-YY-MM-DD-hh-mm-ss").split("-");
+        let format = this.config.imagePathFormat.toLowerCase();
+        format = format.replace("{yyyy}", date[0])
+            .replace("{yy}", date[1])
+            .replace("{mm}", date[2])
+            .replace("{dd}", date[3])
+            .replace("{hh}", date[4])
+            .replace("{ii}", date[5])
+            .replace("{ss}", date[6])
+            .replace("{time}", Date.now())
+            .replace("{filename}", oriName);
+        let randNum = Math.random() * 10000000000 + "" + Math.random() * 10000000000;
+        let matches;
+        if((matches = format.match(/\{rand\:([\d]*)\}/i))) {
+            format = format.replace(/\{rand\:[\d]*\}/i, randNum.substr(0, matches[1]));
+        }
+
+        //额外去除php字眼
+        format = format.replace("php/", "");
+
+        return format + "." + this.getFileExt();
     }
 
     getFilePath() {
-        return !this.file ? null : this.file.path;
+        let fullName = this.fullName;
+        let rootPath = think.ROOT_PATH;
+        return path.normalize(rootPath + "/www/" + fullName);
     }
 
     getFileName() {
-        return this.file ? this.fullName.substr(0, fullName.lastIndexOf(".")) : this.config.fileName;
-    }
-
-    getStateInfo(str) {
-        return this.stateMap[str] || this.stateMap['ERROR_UNKNOWN'];
+        return this.filePath.substr(this.filePath.lastIndexOf("/") + 1);
     }
 
     checkSize() {
@@ -282,12 +281,13 @@ export default class Uploader {
     }
     /**
      * 上传错误检查
-     * @param $errCode
+     * @param errCode
      * @return string
      */
     getStateInfo(errCode)
     {
-        return !this.stateMap[errCode] ? this.stateMap["ERROR_UNKNOWN"] : this.stateMap[errCode];
+        // console.trace("---->", this.stateMap);
+        return this.stateMap[errCode] || this.stateMap["ERROR_UNKNOWN"];
     }
 
     /**
