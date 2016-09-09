@@ -16,6 +16,7 @@ export default {
         return str;
     },
     htmlspecialchars: (str) => {
+        if(!str) return null;
         return str.replace(/&/g,'&amp;')
                 .replace(/</g, '&lt;')
                 .replace(/>/g, '&gt;')

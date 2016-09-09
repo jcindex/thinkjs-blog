@@ -51,7 +51,7 @@ export default class extends Base {
     let callback = this.get("callback");
     if(callback) {
       if(callback.match(/^[\w_]+$/)) {
-        return this.end(commonUtil.htmlspecialchars(callback)
+        return this.end((commonUtil.htmlspecialchars(callback) || "")
           + '(' + result + ')');
       } else {
         return this.end(JSON.stringify({
@@ -109,10 +109,115 @@ export default class extends Base {
     let uploader = new Uploader(this, fieldName, config, base64);
     return JSON.stringify(uploader.getFileInfo());
   }
-  action_list(config) {
-
+  action_list(config, action) {
+    let allowFiles = "",
+        listSize = "",
+        path = "";
+    switch(action) {
+      case 'listfile':
+        allowFiles = config.fileManagerAllowFiles;
+        listSize = config.fileManagerListSize;
+        path = config.fileManagerListPath;
+        break;
+      case 'listimage':
+      default:
+        allowFiles = config.imageManagerAllowFiles;
+        listSize = config.imageManagerListSize;
+        path = config.imageManagerListPath;
+    }
+    allowFiles = allowFiles.join("").replace(".", "|").substr(1);
+    let size = this.get("size");
+    let start = this.get("start");
+    size = commonUtil.htmlspecialchars(size) || listSize;
+    start = commonUtil.htmlspecialchars(start) || 0;
+    let end = start + size;
+    path = think.ROOT_PATH + (path.substr(0, 1) == '/' ? "" : "/") + path;
+    let files = this.getfiles(path, allowFiles);
+    let len = files.length;
+    if(!len) {
+      return JSON.stringify({
+        'state': 'no match file',
+        'list': [],
+        'start': start,
+        'total': len
+      });
+    }
+    let min = end < len ? end : len;
+    for(let i = min - 1, list = [];i < len && i >= 0 && i >= start; i--) {
+      list.push(files[i]);
+    }
+    return {
+      state: 'SUCCESS',
+      list: list,
+      start: start,
+      total: len
+    }
   }
-  action_crawler(config) {
 
+  /* 抓取远程图片 */
+  action_crawler(config, action) {
+    let cfg = {
+      pathFormat: config.catcherPathFormat,
+      maxSize: config.catcherMaxSize,
+      allowFiles: config.catcherAllowFiles,
+      oriName: "remote.png"
+    }, fieldName = config.catcherFieldName;
+    let list = [];
+    let source = this.post(fieldName);
+    source = source || this.get(fieldName);
+    if(think.isArray(source)) {
+      source.forEach(function(imgUrl) {
+        let item = new Uploader(imgUrl, cfg, "remote");
+        let info = item.getFileInfo();
+        list.push({
+          state: info.state,
+          url: info.url,
+          size: info.size,
+          title: commonUtil.htmlspecialchars(info.title),
+          original: commonUtil.htmlspecialchars(info.original),
+          source: commonUtil.htmlspecialchars(imgUrl)
+        });
+      });
+    }
+    return JSON.stringify({
+      state: !!list.length ? "SUCCESS" : "ERROR",
+      list: list
+    });
+  }
+
+  /**
+   * 遍历获取目录下的指定类型的文件
+   * @param path
+   * @param allowFiles 指定文件类型，以|分隔，如jpg|png|exe
+   * @return array
+   */
+  getfiles(path, allowFiles) {
+    if(!think.isDir(path)) return null;
+    if(path.substr(path, path.length - 1) != '/') path += '/';
+    let files = [], fileList = null;
+    try {
+      fileList = fs.readdirSync(path);
+    } catch(e) {
+      console.log(e.message);
+      return;
+    }
+    fileList.forEach(function(item) {
+      if(item != '.' && item != '..') {
+        path += path + item;
+        if(think.isDir(path)) {
+          files.concat(getfiles(path, allowFiles) || []);
+        } else {
+          let reg = new RegExp('/\.(' + allowFiles + ')$/i');
+          if(item.match(reg)) {
+            let stat = fs.statSync(path);
+            files.push({
+              url: path.substr(think.ROOT_PATH.length),
+              mtime: stat.mtime
+            })
+          }
+        }
+      }
+    });
+    return files;
   }
 }

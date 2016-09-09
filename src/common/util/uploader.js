@@ -167,13 +167,6 @@ export default class Uploader {
             this.stateInfo = this.getStateInfo("ERROR_TMP_FILE_NOT_FOUND");
             return;
         }
-        /*
-        else if (!is_uploaded_file(file['tmp_name'])) {
-            this.stateInfo = this.getStateInfo("ERROR_TMPFILE");
-            return;
-        }
-        */
-
         this.oriName = file.originalFilename;
         this.fileSize = file.size;
         this.fileType = this.getFileExt();
@@ -203,10 +196,6 @@ export default class Uploader {
 
         //移动文件
         let buf = fs.readFileSync(this.file.path);
-        // if(!fs.existsSync(this.filePath)) {
-        //     think.mkdir(this.filePath);
-        // }
-        // console.log(buf.length, this.filePath);
         try {
             fs.writeFileSync(this.filePath, buf);
         } catch(e) {
