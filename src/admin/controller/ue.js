@@ -63,6 +63,12 @@ export default class extends Base {
     }
   }
 
+  //这是
+  webuploaderAction() {
+    console.log(">>>>");
+    return this.end("{}");
+  }
+
   action_upload(config, action) {
     let cfg = {};
     let fieldName = "";

@@ -1,5 +1,9 @@
 'use strict';
 
+import moment from "moment";
+import path from "path";
+import fs from "fs";
+
 import Base from './base.js';
 
 /**
@@ -27,20 +31,43 @@ export default class extends Base {
       // return this.addInfo();
       console.log(this.file());
       let simg = this.file("simg");
-      let fs = require("fs");
-      if(fs.existsSync(simg.path)) {
-        let ct = fs.readFileSync(simg.path);
-        let dir = think.RESOURCE_PATH
-                + think.sep + "upload" + think.sep + "Nardy.jpg";
-        //think.mkdir(dir);
-        let ret = fs.writeFileSync(dir, ct);
-        console.log("CT:", ret);
+      let up_dir = this.config("upload_images_dir");
+      let date = moment().format("YYYY-MM-DD").split("-");
+      up_dir = up_dir.replace("{yyyy}", date[0])
+          .replace("{mm}", date[1])
+          .replace("{dd}", date[2]);
+      //创建目录失败
+      if(!fs.existsSync(up_dir) && !think.mkdir(up_dir)) {
+          return this.error(-1, "目录创建失败,缩略图上传失败!!");;
+      } else if (!think.isWritable(up_dir)) {
+          return this.error(-1, "文件写入失败,缩略图上传失败!!");;
+      }
+      let fileName = simg.path.substr(simg.path.lastIndexOf(think.sep) + 1);
+      let filePath = path.normalize(up_dir + think.sep + fileName);
+      //移动文件
+      let buf = fs.readFileSync(simg.path);
+      try {
+          fs.writeFileSync(filePath, buf);
+      } catch(e) {
+          return this.error(-1, "移动文件失败!!");
       }
       return this.end("success!!");
     }
     let catagory = await this.model("catagory").findAll();
+    this.assign("isupdate", false);
     this.assign("catagory", catagory);
     this.assign("article", null);
+    return this.display();
+  }
+
+  async updateAction() {
+    if(this.isPost()) {
+      console.log(this.file());
+      return this.end("post.///");
+    }
+    this.assign({
+      isupdate: true
+    });
     return this.display();
   }
 
