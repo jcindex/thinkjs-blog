@@ -74,7 +74,6 @@ var countdown = null;
 function textarealength(_this, maxcount) {
 	countdown = countdown || $("em.textarea-length");
 	var len = _this.value.length;
-	console.log(len);
 	if(len > maxcount) {
 		len = maxcount;
 		_this.value = _this.value.substr(0, maxcount);
@@ -123,7 +122,7 @@ function catagory_save() {
 
 //取消并返回
 function removeIframe() {
-	if(confirm("该操作会消除已保存的信息，是否继续？")) {
+	if(confirm("该操作会清除已保存的信息，是否继续？")) {
 		window.localStorage && window.localStorage.setItem("info", "{}");
 		location.href = "/admin/catagory/list.html";
 	}

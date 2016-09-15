@@ -17,10 +17,17 @@ export default class extends think.model.mongo {
     }
 
     delArticle(_id) {
-        return this.where({_id: _id}).remove();
+        return this.where({_id: _id}).delete();
     }
 
-    updateArticle(_id, article) {
-        return this.where({_id: _id}).update(article);
+    batchDel(ids) {
+        ids.forEach((item) => {
+            this.delArticle(item);
+        });
+        //return this.where({_id:['in', ids]}).delete();
+    }
+
+    updateArticle(article) {
+        return this.where({_id: article._id}).update(article);
     }
 }

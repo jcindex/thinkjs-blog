@@ -4,6 +4,9 @@
 <body>
 <article class="page-container">
 	<form class="form form-horizontal"<% if(isupdate){%> action="update"<%}else{%> action="add"<% }%> id="form-article-add" method="post" enctype="multipart/form-data">
+		<% if(isupdate){%>
+		<input type="hidden" name="_id" value="<%=_id %>" />
+		<% }%>
 		<div class="row cl">
 			<label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>文章标题：</label>
 			<div class="formControls col-xs-8 col-sm-9">
@@ -51,7 +54,7 @@
 		<div class="row cl">
 			<label class="form-label col-xs-4 col-sm-2">文章摘要：</label>
 			<div class="formControls col-xs-8 col-sm-9">
-				<textarea name="abstract" class="textarea" placeholder="说点什么...最少输入10个字符" datatype="*10-100" dragonfly="true" nullmsg="备注不能为空！" onKeyUp="textarealength(this,200)"><%= article ? article.abstract : '' %></textarea>
+				<textarea name="abstract" class="textarea" maxlength="200" placeholder="说点什么...最少输入10个字符" datatype="*10-100" dragonfly="true" nullmsg="备注不能为空！" onKeyUp="textarealength(this,200)"><%= article ? article.abstract : '' %></textarea>
 				<p class="textarea-numberbar"><em class="textarea-length"><%= article ? (article.abstract?article.abstract.length: 0) : '0' %></em>/200</p>
 			</div>
 		</div>
@@ -64,7 +67,7 @@
 		<div class="row cl">
 			<label class="form-label col-xs-4 col-sm-2">文章来源：</label>
 			<div class="formControls col-xs-8 col-sm-9">
-				<input type="text" class="input-text" value="<%= article ? article.source : '' %>" placeholder="请输入文章来源，如链接" name="source">
+				<input type="text" class="input-text" placeholder="http(s)://" value="<%= article ? article.source : '' %>" placeholder="请输入文章来源，如链接" name="source">
 			</div>
 		</div>
 		<div class="row cl">
@@ -93,9 +96,21 @@
 			</div>
 		</div>
 		<div class="row cl">
+			<label class="form-label col-xs-4 col-sm-2">发布：</label>
+			<div class="formControls col-xs-8 col-sm-9 skin-minimal">
+				<div class="check-box">
+					<% if(article && article.deploy_state == 0) {%>
+					<input type="checkbox" name="deploy_state" value="1" id="checkbox-deploy">
+					<% } else {%>
+					<input type="checkbox" name="deploy_state" checked="checked" value="1" id="checkbox-deploy">
+					<% } %>
+					<label for="checkbox-deploy">&nbsp;</label>
+				</div>
+			</div>
+		</div>
+		<div class="row cl">
 			<div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-2">
-				<button onClick="article_save_submit();" class="btn btn-primary radius" type="submit"><i class="Hui-iconfont">&#xe632;</i> 保存并提交审核</button>
-				<button onClick="article_save();" class="btn btn-secondary radius" type="button"><i class="Hui-iconfont">&#xe632;</i> 保存草稿</button>
+				<button class="btn btn-primary radius" type="submit"><i class="Hui-iconfont">&#xe632;</i> 保存并提交审核</button>
 				<button onClick="removeIframe();" class="btn btn-default radius" type="button">&nbsp;&nbsp;取消&nbsp;&nbsp;</button>
 			</div>
 		</div>
@@ -124,6 +139,46 @@ $(function(){
 	});
 	
 });
+
+/**
+ * 统计输入字数
+ */
+var countdown = null;
+function textarealength(_this, maxcount) {
+	countdown = countdown || $("em.textarea-length");
+	var len = _this.value.length;
+	if(len > maxcount) {
+		len = maxcount;
+		_this.value = _this.value.substr(0, maxcount);
+	}
+	countdown.html(len);
+}
+
+//检查表
+function checkForm() {
+	var errobj = null;
+	$form.find("input, select, textarea").each(function() {
+		var val = $(this).val();
+		var name = $(this).attr("name");
+		if(name === 'abstract' && val.length < 5) {
+			alert("文章摘要不能少于5个字");
+			errobj = $(this);
+		}
+		if(!val) errobj = $(this);
+	});
+	if(errobj) {
+		errobj.focus();
+		return false;
+	}
+	return true;
+}
+
+//取消并返回
+function removeIframe() {
+	if(confirm("该操作会清除已填写的信息，是否继续？")) {
+		location.href = "/admin/article/list.html";
+	}
+}
 </script>
 <!--/请在上方写此页面业务相关的脚本-->
 </body>
